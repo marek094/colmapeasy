@@ -1,0 +1,75 @@
+#pragma once
+
+#include <FreeImage.h>
+#include <Eigen/Dense>
+#include <pybind11/attr.h>
+
+#include <cstdint>
+#include <string>
+#include <vector>
+
+
+namespace colmapeasy {
+
+using image_dd = Eigen::Matrix<std::uint8_t, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>;
+
+class Image : public Eigen::Matrix<std::uint8_t, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> {
+  public:
+    using Matrix::Matrix;
+
+    FIBITMAP* view_as_FreeImage() {
+        return FreeImage_ConvertFromRawBits(
+            this->data(), 
+            this->cols(), 
+            this->rows(), 
+            this->cols(), 
+            8, 
+            0, 
+            0, 
+            0
+        );
+    }
+};
+
+using image_t = Image;
+
+class Kwds {
+  public:
+
+    explicit Kwds(pybind11::kwargs&& kwargs) : kwargs(std::move(kwargs)) {
+        this->args = std::vector<std::string>{};
+        args.emplace_back("colmap");
+
+        for (auto&& [k, value] : kwargs) {
+            auto option = k.cast<std::string>();
+            boost::replace_all(option, "__", ".");
+            args.emplace_back("--" + option);
+            args.emplace_back(value.cast<std::string>());
+        }
+
+        this->argv = std::vector<char*>{};
+        for (auto&& arg : args) {
+            argv.push_back(&arg.front());
+        }
+    }
+
+    int count() const {
+        return const_cast<int>(this->kwargs.size());
+    }
+
+    char** view_as_argv() {
+        return argv.data();
+    }
+
+  private:
+    pybind11::kwargs kwargs;
+    std::vector<std::string> args;
+    std::vector<char*> argv;
+};
+
+// return image_t view_as_image(FIBITMAP* const& fi_bitmap) {
+//     FreeImage_ConvertFromRawBits(data, cols, rows, scan_width, bpp, 0, 0, 0);
+
+// }
+
+}

@@ -1,10 +1,22 @@
-cmake_minimum_required(VERSION 3.4...3.18)
-project(cmake_example)
+cmake_minimum_required(VERSION 3.11)
+project(colmapeasy)
 
 add_subdirectory(pybind11)
-pybind11_add_module(cmake_example src/main.cpp)
 
-# EXAMPLE_VERSION_INFO is defined by setup.py and passed into the C++ code as a
-# define (VERSION_INFO) here.
-target_compile_definitions(cmake_example
-                           PRIVATE VERSION_INFO=${EXAMPLE_VERSION_INFO})
+# add_compile_options(-Wall -Wextra -pedantic -Werror)
+
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -pthread")
+set(CMAKE_CXX_STANDARD 20 CACHE STRING "C++ version selection")
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_BUILD_TYPE Release)
+set(OpenGL_GL_PREFERENCE GLVND)
+file(GLOB SOURCES src/*.cpp)
+
+find_package(COLMAP 3.7 REQUIRED)
+include_directories(${COLMAP_INCLUDE_DIRS} include)
+link_directories(${COLMAP_LINK_DIRS} src)
+
+pybind11_add_module(_colmapeasy ${SOURCES})
+
+target_link_libraries(_colmapeasy PRIVATE ${COLMAP_LIBRARIES})
