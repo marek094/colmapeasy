@@ -12,11 +12,12 @@ def main(flags):
     images = [
         Image.open(path).convert('L')
         for path in flags.image_path.glob('*.jpg')
-    ][:4]
+    ]
     
-    result = Parallel(n_jobs=4, prefer="threads")(
+    result = Parallel(n_jobs=1, prefer="threads", require='sharedmem')(
         delayed(colmapeasy.extract_features)(
             image,
+            random_seed='2022',
             SiftExtraction__num_threads='12',
             SiftExtraction__use_gpu='0',
         )
@@ -27,12 +28,22 @@ def main(flags):
     
     print(len(keypoints), len(descriptors))
 
-    result2 = colmapeasy.match(
-        descriptors[0], 
-        descriptors[1],
+    result2 = colmapeasy.match_exhaustive(
+        descriptors,
+        random_seed='2022',
+        SiftMatching__use_gpu='0',
     )
 
-    print(result2)
+    print('Result2 ', len(result2))
+    matches = result2
+
+
+    result3 = colmapeasy.map_incremental(
+        matches
+    )
+    
+    print('Result3', result3)
+
 
 
 if __name__ == "__main__":

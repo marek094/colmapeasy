@@ -28,9 +28,7 @@ extract_features(Image image, py::kwargs kwargs) {
     options.AddExtractionOptions();
     options.Parse(args.count(), args.view_as_argv());
     options.Check();
-
     assert(!!options.sift_extraction);
-    auto&& extraction_options = *options.sift_extraction;
 
     auto keypoints = colmap::FeatureKeypoints{};
     auto descriptors = colmap::FeatureDescriptors{};
@@ -39,7 +37,7 @@ extract_features(Image image, py::kwargs kwargs) {
 
     auto bitmap = colmap::Bitmap{image.view_as_FreeImage()};
     bool result = colmap::ExtractSiftFeaturesCPU(
-        extraction_options,
+        *options.sift_extraction,
         bitmap,
         &keypoints,
         &descriptors

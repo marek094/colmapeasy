@@ -1,5 +1,6 @@
 #include "feature_extractor.hpp"
 #include "matcher.hpp"
+#include "incremental_mapper.hpp"
 
 #include <filesystem>
 
@@ -13,12 +14,14 @@
 
 namespace py = pybind11;
 
-PYBIND11_MODULE(_colmapeasy, m) {
+PYBIND11_MODULE(colmapeasy_impl, m) {
 
     m.def("extract_features", colmapeasy::extract_features);
 
     m.def("match", colmapeasy::match);
     
+    m.def("map_incremental", colmapeasy::map_incremental);
+
     py::class_<colmap::FeatureKeypoint>(m, "FeatureKeypoint")
         .def(py::init<const float, const float, 
                       const float, const float, 

@@ -120,13 +120,13 @@ class CMakeBuild(build_ext):
 # The information here can also be placed in setup.cfg - better separation of
 # logic and declaration, and simpler if you include description/version in a file.
 setup(
-    name="colmapeasy",
+    name="colmapeasy_impl",
     version="0.0.1",
     author="Marek Cerny",
     author_email="me@marekcerny.com",
     description="Python in-memory interface to Colmap",
     long_description="",
-    ext_modules=[CMakeExtension("_colmapeasy")],
+    ext_modules=[CMakeExtension("colmapeasy_impl")],
     cmdclass={"build_ext": CMakeBuild},
     zip_safe=False,
     packages=['colmapeasy'],

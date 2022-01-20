@@ -29,14 +29,11 @@ match(
     options.AddMatchingOptions();
     options.Parse(args.count(), args.view_as_argv());
     options.Check();
-
     assert(!!options.sift_matching);
-    auto&& sift_matching = *options.sift_matching;
 
-    assert(descriptors_vec.size() > 1);
-    auto matches = colmap::FeatureMatches{}; 
+    auto matches = colmap::FeatureMatches{};
     colmap::MatchSiftFeaturesCPU(
-        sift_matching,
+        *options.sift_matching,
         descriptors1,
         descriptors2,
         &matches

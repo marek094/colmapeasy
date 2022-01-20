@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.11)
-project(colmapeasy)
+project(colmapeasy_impl)
 
 add_subdirectory(pybind11)
 
@@ -17,6 +17,6 @@ find_package(COLMAP 3.7 REQUIRED)
 include_directories(${COLMAP_INCLUDE_DIRS} include)
 link_directories(${COLMAP_LINK_DIRS} src)
 
-pybind11_add_module(_colmapeasy ${SOURCES})
+pybind11_add_module(colmapeasy_impl ${SOURCES})
 
-target_link_libraries(_colmapeasy PRIVATE ${COLMAP_LIBRARIES})
+target_link_libraries(colmapeasy_impl PRIVATE ${COLMAP_LIBRARIES})
