@@ -1,3 +1,4 @@
+from nis import match
 from pathlib import Path
 from PIL import Image
 import numpy as np
@@ -35,15 +36,21 @@ def main(flags):
     )
 
     print('Result2 ', len(result2))
-    matches = result2
+    matches_map = result2
 
-
-    result3 = colmapeasy.map_incremental(
-        matches
+    result3 = colmapeasy.import_matches(
+        keypoints,
+        matches_map,
     )
-    
-    print('Result3', result3)
 
+    tw_geometries = result3
+    print(result3)
+
+    # result4 = colmapeasy.map_incremental(
+    #     tw_geometries
+    # )
+
+    # print(result4)
 
 
 if __name__ == "__main__":

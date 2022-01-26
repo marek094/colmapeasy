@@ -1,5 +1,4 @@
-from gettext import npgettext
-from colmapeasy_impl import match
+from colmapeasy_impl import match, verify
 
 from joblib import Parallel, delayed
 import numpy as np
@@ -51,3 +50,16 @@ def match_exhaustive(descriptors_vec, block_size=50, **kwargs):
             matches.update(match_pairs(pairs))
 
     return matches
+
+
+def import_matches(keypoints_vec, matches_map, **kwargs):
+    tw_geometries = Parallel(n_jobs=-1, prefer="threads", require='sharedmem')(
+        delayed(verify)(
+            keypoints_vec[idx1], 
+            keypoints_vec[idx2],
+            matches
+        )
+        for (idx1, idx2), matches in matches_map.items()
+    )
+
+    return tw_geometries

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <colmap/feature/types.h>
+
 #include <FreeImage.h>
 #include <Eigen/Dense>
 #include <boost/algorithm/string.hpp>
@@ -9,6 +11,7 @@
 #include <string>
 #include <vector>
 #include <iostream>
+#include <map>
 
 namespace colmapeasy {
 
@@ -29,8 +32,6 @@ class Image : public Eigen::Matrix<std::uint8_t, Eigen::Dynamic, Eigen::Dynamic,
         );
     }
 };
-
-using image_t = Image;
 
 class Kwds {
   public:
@@ -74,6 +75,19 @@ class Kwds {
     const std::vector<std::string> args;
     std::vector<char*> argv;
 };
+
+
+using FeatureMatchesMap = std::map<std::pair<colmap::image_t, colmap::image_t>, colmap::FeatureMatches>;
+
+std::vector<colmap::image_t> to_uniq_image_ids(const FeatureMatchesMap& fmm) {
+    auto result = std::unordered_set<colmap::image_t>{};
+    for (auto&& match : fmm) {
+        auto&& pair = match.first;
+        result.insert(pair.first);
+        result.insert(pair.second);
+    }
+    return {result.begin(), result.end()};
+}
 
 // return image_t view_as_image(FIBITMAP* const& fi_bitmap) {
 //     FreeImage_ConvertFromRawBits(data, cols, rows, scan_width, bpp, 0, 0, 0);
